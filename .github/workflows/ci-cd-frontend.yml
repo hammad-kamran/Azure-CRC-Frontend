@@ -1,0 +1,26 @@
+name: CI/CD Frontend
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Azure CLI
+        uses: azure/setup-azure@v1
+        with:
+          azure-cli-version: '2.33.0'
+
+      - name: Deploy to Azure Storage
+        env:
+          AZURE_STORAGE_ACCOUNT: hammadresumestorages
+          AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
+        run: |
+          az storage blob upload-batch -d \$web --account-name $AZURE_STORAGE_ACCOUNT --pattern '*' .
