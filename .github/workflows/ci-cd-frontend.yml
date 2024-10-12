@@ -1,26 +1,46 @@
-name: CI/CD Frontend
+name: CI/CD for Frontend
 
 on:
   push:
     branches:
-      - main
+      - main  # Change to your default branch if different
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      - name: Set up Azure CLI
-        uses: azure/setup-azure@v1
-        with:
-          azure-cli-version: '2.33.0'
+    - name: Set up Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14'  # You can specify the version of Node.js
 
-      - name: Deploy to Azure Storage
-        env:
-          AZURE_STORAGE_ACCOUNT: hammadresumestorages
-          AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
-        run: |
-          az storage blob upload-batch -d \$web --account-name $AZURE_STORAGE_ACCOUNT --pattern '*' .
+    - name: Install dependencies
+      run: npm install  # Run this if you have a package.json
+
+    - name: Build the project
+      run: npm run build  # Replace this with your build command if necessary
+
+    - name: Azure CLI Setup
+      uses: azure/setup-azure@v1
+      with:
+        azcliversion: '2.33.0'  # Use the latest version
+
+    - name: Login to Azure
+      env:
+        AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+        AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      run: |
+        echo "Logging into Azure..."
+        az login --service-principal --username $AZURE_CLIENT_ID --password $AZURE_CLIENT_SECRET --tenant $AZURE_TENANT_ID
+
+    - name: Deploy to Azure Storage
+      run: |
+        az storage blob upload-batch \
+          --account-name hammadresumestorages \
+          --destination '$web' \
+          --source './build'  # Change to your build directory
