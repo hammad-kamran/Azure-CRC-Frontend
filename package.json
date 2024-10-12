@@ -1,0 +1,12 @@
+{
+  "name": "azure-crc-frontend",
+  "version": "1.0.0",
+  "description": "This repository contains the frontend for the Cloud Resume Challenge, where I present my resume as a static website hosted on Azure Storage. The website is styled with CSS and includes a visitor counter that interacts with the backend API.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
