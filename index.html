@@ -31,6 +31,11 @@
             margin: 0;
             font-size: 36px;
         }
+        .header h2 {
+            margin: 5px 0;
+            font-size: 24px;
+            color: #ccc;
+        }
         .contact-info a {
             color: #fff;
             text-decoration: none;
@@ -68,24 +73,21 @@
     <div class="container">
         <div class="header">
             <h1>Hammad Kamran Faruki</h1>
+            <h2>DevOps Engineer</h2>
             <div style="text-align: center;">
                 <p class="contact-info">
-                    DevOps Engineer<br>
                     <a href="mailto:hammadkamran777@gmail.com">hammadkamran777@gmail.com</a><br>
                     <a href="https://www.linkedin.com/in/hammad-kamran-faruki" target="_blank">LinkedIn</a> | 
                     <a href="https://github.com/hammad-kamran" target="_blank">GitHub</a><br>
                     +92 312 7269761
                 </p>
             </div>
-            </div>
- 
-        
+        </div>
 
         <div class="section">
-            <section id="visitor-counter">
-                <h2>Visitor Count</h2>
-                <p>This page has been visited <span id="count">0</span> times.</p>
-            </section>
+            <div class="visitor-counter">
+                This page has been visited: <span id="counter">...</span>
+            </div>
             <h2>Career Objective</h2>
             <p>
                 A hands-on DevOps Engineer with a passion for solving complex challenges, excelling in environments where continuous improvement and innovation drive business outcomes. 
@@ -154,26 +156,41 @@
             </ul>
         </div>
     </div>
+
     <script>
-        async function updateVisitorCount() {
-            // Replace this URL with the actual API URL using the default function key
-            const apiUrl = 'https://hammadresume-func.azurewebsites.net/api/http_trigger_ham?code=-kLOj5YNmFGA5I1MzKq_xU73YHpmddtyPIo3hswF7WlxAzFuAG7S3w%3D%3D';
-            
+        async function getVisitorCount() {
             try {
-                // Fetch the visitor count from the API
-                const response = await fetch(apiUrl);
+                const response = await fetch('https://hammadresume-funcapi.azurewebsites.net/api/http_trigger_ham?code=9zZnrgZYpmATzwIhc6Uz4al-d2ZrbQSQcJu8P-E26yqTAzFuqV5Nwg%3D%3D'); // Replace with your actual API URL
+                if (!response.ok) {
+                    throw new Error('Network response was not ok: ' + response.statusText);
+                }
                 const data = await response.json();
-                
-                // Update the visitor count on the page
-                document.getElementById('count').textContent = data.count; // Ensure your function returns 'count'
+                console.log('Full API Response:', data); // Log full response for debugging
+                return data.visitor_count; // Access the visitor_count from the JSON response
             } catch (error) {
                 console.error('Error fetching visitor count:', error);
+                return null;
             }
         }
-    
+
+        async function updateVisitorCount() {
+            const currentCount = await getVisitorCount();
+            if (currentCount !== null) {
+                document.getElementById('counter').innerText = currentCount; // Update the displayed count
+            } else {
+                document.getElementById('counter').innerText = 'Unable to retrieve visitor count at the moment.';
+            }
+        }
+
+        // Call this function on page load or at intervals
+        document.addEventListener('DOMContentLoaded', () => {
+            updateVisitorCount();
+            setInterval(updateVisitorCount, 60000); // Update every minute
+        });
+
         // Call the function to update the visitor count when the page loads
         window.onload = updateVisitorCount;
     </script>
-     
 </body>
 </html>
+
